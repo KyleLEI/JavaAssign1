@@ -1,5 +1,12 @@
 package world;
-import warriors.*;
+import java.util.LinkedList;
+
+import warriors.Dragon;
+import warriors.Iceman;
+import warriors.Lion;
+import warriors.Ninja;
+import warriors.Warrior;
+import warriors.Wolf;
 /**
  * The Headquarter class stores how many life elements are left in the headquarter.
  * It records the following information:
@@ -13,13 +20,16 @@ import warriors.*;
  *
  */
 public class Headquarter {
+	public LinkedList<Warrior> warriorInHQ;
 	private int lifeElements=0;
 	private Team team;
 	private int spawnIndex=0;
 	private WarriorType type;
 	
-	Headquarter(Team inTeam){
+	Headquarter(int inLife,Team inTeam){
+		lifeElements=inLife;
 		team=inTeam;
+		warriorInHQ=new LinkedList<Warrior>();
 	}
 
 	/**
@@ -48,41 +58,80 @@ public class Headquarter {
 		if(team==Team.red){
 			switch(TypeIndex){
 			case 0:
-				ret=new Iceman(ID,type.getHP(WarriorType.type.ICEMAN),type.geAttack(WarriorType.type.ICEMAN),Team.red);
+				if(lifeElements>=type.getHP(WarriorType.type.ICEMAN)){
+					ret=new Iceman(ID,type.getHP(WarriorType.type.ICEMAN),type.geAttack(WarriorType.type.ICEMAN),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.ICEMAN);
+					++spawnIndex;
+				}
 				break;
 			case 1:
-				ret=new Lion(ID,type.getHP(WarriorType.type.LION),type.geAttack(WarriorType.type.LION),Team.red);
+				if(lifeElements>=type.getHP(WarriorType.type.LION)){
+					ret=new Lion(ID,type.getHP(WarriorType.type.LION),type.geAttack(WarriorType.type.LION),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.LION);
+					++spawnIndex;
+				}
 				break;
 			case 2:
-				ret=new Wolf(ID,type.getHP(WarriorType.type.WOLF),type.geAttack(WarriorType.type.WOLF),Team.red);
+				if(lifeElements>=type.getHP(WarriorType.type.WOLF)){
+					ret=new Wolf(ID,type.getHP(WarriorType.type.WOLF),type.geAttack(WarriorType.type.WOLF),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.WOLF);
+					++spawnIndex;
+				}
 				break;
 			case 3:
-				ret=new Ninja(ID,type.getHP(WarriorType.type.NINJA),type.geAttack(WarriorType.type.NINJA),Team.red);
+				if(lifeElements>=type.getHP(WarriorType.type.NINJA)){
+					ret=new Ninja(ID,type.getHP(WarriorType.type.NINJA),type.geAttack(WarriorType.type.NINJA),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.NINJA);
+					++spawnIndex;
+				}
 				break;
 			case 4:
-				ret=new Dragon(ID,type.getHP(WarriorType.type.DRAGON),type.geAttack(WarriorType.type.DRAGON),Team.red);
+				if(lifeElements>=type.getHP(WarriorType.type.DRAGON)){
+					ret=new Dragon(ID,type.getHP(WarriorType.type.DRAGON),type.geAttack(WarriorType.type.DRAGON),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.DRAGON);
+					++spawnIndex;
+				}
 				break;
 			}
 		}else{
 			switch(TypeIndex){
 			case 0:
-				ret=new Lion(ID,type.getHP(WarriorType.type.LION),type.geAttack(WarriorType.type.LION),Team.blue);
+				if(lifeElements>=type.getHP(WarriorType.type.LION)){
+					ret=new Lion(ID,type.getHP(WarriorType.type.LION),type.geAttack(WarriorType.type.LION),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.LION);
+					++spawnIndex;
+				}
 				break;
 			case 1:
-				ret=new Dragon(ID,type.getHP(WarriorType.type.DRAGON),type.geAttack(WarriorType.type.DRAGON),Team.blue);
+				if(lifeElements>=type.getHP(WarriorType.type.DRAGON)){
+					ret=new Dragon(ID,type.getHP(WarriorType.type.DRAGON),type.geAttack(WarriorType.type.DRAGON),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.DRAGON);
+					++spawnIndex;
+				}
 				break;
 			case 2:
-				ret=new Ninja(ID,type.getHP(WarriorType.type.NINJA),type.geAttack(WarriorType.type.NINJA),Team.blue);
+				if(lifeElements>=type.getHP(WarriorType.type.NINJA)){
+					ret=new Ninja(ID,type.getHP(WarriorType.type.NINJA),type.geAttack(WarriorType.type.NINJA),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.NINJA);
+					++spawnIndex;
+				}
 				break;
 			case 3:
-				ret=new Iceman(ID,type.getHP(WarriorType.type.ICEMAN),type.geAttack(WarriorType.type.ICEMAN),Team.blue);
+				if(lifeElements>=type.getHP(WarriorType.type.ICEMAN)){
+					ret=new Iceman(ID,type.getHP(WarriorType.type.ICEMAN),type.geAttack(WarriorType.type.ICEMAN),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.ICEMAN);
+					++spawnIndex;
+				}
 				break;
 			case 4:
-				ret=new Wolf(ID,type.getHP(WarriorType.type.WOLF),type.geAttack(WarriorType.type.WOLF),Team.blue);
+				if(lifeElements>=type.getHP(WarriorType.type.WOLF)){
+					ret=new Wolf(ID,type.getHP(WarriorType.type.WOLF),type.geAttack(WarriorType.type.WOLF),Team.red);
+					lifeElements-=type.getHP(WarriorType.type.WOLF);
+					++spawnIndex;
+				}
 				break;
 			}
 		}
-		++spawnIndex;
 		return ret;
 	}
 }

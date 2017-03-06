@@ -1,5 +1,7 @@
 package world;
 
+import java.util.LinkedList;
+
 import warriors.Warrior;
 /**
  * The City class records references to warriors in the city, 
@@ -15,12 +17,12 @@ import warriors.Warrior;
  * @version 1.0.0
  */
 public class City {
-	private Warrior[] warriors;
+	public LinkedList<Warrior> warriorInCity;
 	private Team occupier=Team.none;
 	private int lifeElements=0;
 	
 	City(){
-		warriors=new Warrior[2];//maximum capacity of a city is two warriors
+		warriorInCity=new LinkedList<Warrior>();
 	}
 	
 	public void produceLifeElements(){lifeElements+=10;}

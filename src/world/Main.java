@@ -32,6 +32,7 @@ public class Main {
 				Integer.parseInt(tknzr.nextToken()));
 		
 		sc.close();
+		//reading input complete
 		world.run();
 	}
 

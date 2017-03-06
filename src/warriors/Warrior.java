@@ -19,7 +19,7 @@ public class Warrior {
 	protected int HP;
 	protected int attackV;
 	protected Team team;
-	public int location;
+	public int location=0;
 	
 	/**
 	 * Returns whether the warrior's HP is less or equal to 0
@@ -36,17 +36,11 @@ public class Warrior {
 	public void addHP(int lifeElement){
 		this.HP+=lifeElement;
 	}
-	public int getHP() {
-		return HP;
+	
+	public Team getTeam() {
+		return team;
 	}
 
-	public int getAttackV() {
-		return attackV;
-	}
-	
-	public void setID(int inID){
-		ID=inID;
-	}
 	/**
 	 * Returns the team, name and id of this warrior. 
 	 * To be overridden by all derived classes
@@ -56,6 +50,15 @@ public class Warrior {
 	@Override
 	public String toString(){
 		return null;
+	}
+	
+	/**
+	 * Returns the warrior's HP and attackV in a formatted String
+	 *
+	 * @return "with "+HP+" elements and force "+attackV;
+	 */
+	public String getDetails(){
+		return "with "+HP+" elements and force "+attackV;
 	}
 	
 	/**
