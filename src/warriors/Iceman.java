@@ -1,4 +1,5 @@
 package warriors;
+import world.Team;
 /**
  * This derived class from {@link Warrior} models an Iceman. 
  * Exactly after it goes every two steps, 
@@ -16,9 +17,23 @@ public class Iceman extends Warrior {
 	 * @param inID  the ID of the iceman.
 	 * @param inHP  the HP of the iceman.
 	 * @param inAttackV  the attack value of the iceman.
+	 * @param inTeam  the team of the iceman.
 	 */
-	public Iceman(int inID,int inHP,int inAttackV,String inTeam){
+	public Iceman(int inID,int inHP,int inAttackV,Team inTeam){
 		super(inID,inHP,inAttackV,inTeam);
+	}
+	
+	int steps=0;
+	/**
+	 * Reduce HP by 9 and increase attack by 20 every two steps.
+	 */
+	@Override
+	public void beforeMove(){
+		if(steps%2==0&&steps!=0){
+			HP-=9;
+			HP=Math.max(HP, 1);
+			attackV+=20;
+		}
 	}
 	
 	/**

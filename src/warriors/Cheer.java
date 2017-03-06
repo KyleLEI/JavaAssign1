@@ -15,6 +15,10 @@ public class Cheer extends Throwable {
 		dragon=inDragon;
 	}
 	
+	public Dragon getDragon() {
+		return dragon;
+	}
+
 	@Override
 	public String toString() {
 		return dragon.toString() + " roared";

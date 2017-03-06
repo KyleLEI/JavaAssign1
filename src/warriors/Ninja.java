@@ -1,4 +1,5 @@
 package warriors;
+import world.Team;
 /**
  * This derived class from {@link Warrior} models a ninja. 
  * It will never fight back.
@@ -13,8 +14,9 @@ public class Ninja extends Warrior {
 	 * @param inID  the ID of the ninja.
 	 * @param inHP  the HP of the ninja.
 	 * @param inAttackV  the attack value of the ninja.
+	 * @param inTeam  the team of the ninja.
 	 */
-	public Ninja(int inID,int inHP,int inAttackV,String inTeam){
+	public Ninja(int inID,int inHP,int inAttackV,Team inTeam){
 		super(inID,inHP,inAttackV,inTeam);
 	}
 	

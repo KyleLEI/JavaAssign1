@@ -1,4 +1,5 @@
 package warriors;
+import world.Team;
 /**
  * This derived class from {@link Warrior} models a dragon. 
  * It will cheer at the end of the battle, 
@@ -14,8 +15,9 @@ public class Dragon extends Warrior {
 	 * @param inID  the ID of the dragon.
 	 * @param inHP  the HP of the dragon.
 	 * @param inAttackV  the attack value of the dragon.
+	 * @param inTeam  the team of the dragon.
 	 */
-	public Dragon(int inID,int inHP,int inAttackV,String inTeam){
+	public Dragon(int inID,int inHP,int inAttackV,Team inTeam){
 		super(inID,inHP,inAttackV,inTeam);
 	}
 	
@@ -25,10 +27,5 @@ public class Dragon extends Warrior {
 	@Override
 	public String toString(){
 		return team+" dragon "+ID;
-	}
-	
-	@Override
-	public void attack(Warrior enemy) throws Death{
-		super.attack(enemy);
 	}
 }

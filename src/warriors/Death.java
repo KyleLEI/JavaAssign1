@@ -21,6 +21,14 @@ public class Death extends Throwable {
 		victim=inVictim;
 	}
 
+	public Warrior getKiller() {
+		return killer;
+	}
+
+	public Warrior getVictim() {
+		return victim;
+	}
+
 	@Override
 	public String toString() {
 		return killer.toString() + " killed " + victim.toString();

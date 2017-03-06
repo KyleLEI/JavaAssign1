@@ -1,4 +1,5 @@
 package warriors;
+import world.Team;
 /**
  * This main class tests the functionality of warrior classes.
  *
@@ -8,28 +9,31 @@ package warriors;
 public class TestWarriors {
 
 	public static void main(String[] args) {
-		Warrior b = new Lion(1, 10, 4,"red");
-		Warrior a = new Dragon(1, 8, 2,"blue");
+		Warrior b = new Wolf(1, 50, 15,Team.red);
+		Warrior a = new Dragon(1, 60, 10,Team.blue);
 
 		while (true) {
 			// attack routine
 			try {
+				a.beforeMove();
+				b.beforeMove();
 				a.attack(b);
 				// announce here
 				try{b.counter(a);}
-				catch(Cheer c){System.out.println(c.toString());}
+				catch(Cheer c){System.out.println(c);}
 				// announce here
 				b.attack(a);
 				// announce here
 				try{a.counter(b);}
-				catch(Cheer c){System.out.println(c.toString());}
+				catch(Cheer c){System.out.println(c);}
 				// announce here
 			} catch (Death d) {
-				System.out.println(d.toString());
+				//process death
+				System.out.println(d);
 				break;
 			}
-			System.out.println(a.toString() + ".HP = " + a.getHP());
-			System.out.println(b.toString() + ".HP= " + b.getHP());
+			System.out.println(a + ".HP = " + a.getHP());
+			System.out.println(b + ".HP= " + b.getHP());
 		}
 	}
 

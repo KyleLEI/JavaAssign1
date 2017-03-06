@@ -1,4 +1,5 @@
 package warriors;
+import world.Team;
 /**
  * This derived class from {@link Warrior} models a Lion. 
  * If a lion dies in a battle, 
@@ -14,8 +15,9 @@ public class Lion extends Warrior{
 	 * @param inID  the ID of the lion.
 	 * @param inHP  the HP of the lion.
 	 * @param inAttackV  the attack value of the lion.
+	 * @param inTeam  the team of the lion.
 	 */
-	public Lion(int inID,int inHP,int inAttackV,String inTeam){
+	public Lion(int inID,int inHP,int inAttackV,Team inTeam){
 		super(inID,inHP,inAttackV, inTeam);
 	}
 	/**
