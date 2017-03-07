@@ -114,7 +114,12 @@ public class Warrior {
 	public void counter(Warrior enemy) throws Death,Cheer{
 		enemy.HP-=this.attackV/2;
 		//must throw Death first, or death will never be caught because of the Cheer thrown
-		if(enemy.isDead()) throw new Death(this,enemy);
+		if(enemy.isDead()) {
+			if(enemy instanceof Lion){
+				this.HP+=enemy.HP;//transfer the HP to the warrior that killed it
+			}
+			throw new Death(this,enemy);
+		}
 		else if(enemy instanceof Dragon){throw new Cheer((Dragon)enemy);}
 	}
 

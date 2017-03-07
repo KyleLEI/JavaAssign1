@@ -48,7 +48,7 @@ public class Headquarter {
 	}
 	
 	/**
-	 * Spawn warrior in specific sequence.
+	 * Spawn warrior in specific sequence. Hard code is used here, duh.
 	 * @return the reference to the spawned warrior
 	 */
 	public Warrior spawnWarrior(){
@@ -97,35 +97,35 @@ public class Headquarter {
 			switch(TypeIndex){
 			case 0:
 				if(lifeElements>=type.getHP(WarriorType.type.LION)){
-					ret=new Lion(ID,type.getHP(WarriorType.type.LION),type.geAttack(WarriorType.type.LION),Team.red);
+					ret=new Lion(ID,type.getHP(WarriorType.type.LION),type.geAttack(WarriorType.type.LION),Team.blue);
 					lifeElements-=type.getHP(WarriorType.type.LION);
 					++spawnIndex;
 				}
 				break;
 			case 1:
 				if(lifeElements>=type.getHP(WarriorType.type.DRAGON)){
-					ret=new Dragon(ID,type.getHP(WarriorType.type.DRAGON),type.geAttack(WarriorType.type.DRAGON),Team.red);
+					ret=new Dragon(ID,type.getHP(WarriorType.type.DRAGON),type.geAttack(WarriorType.type.DRAGON),Team.blue);
 					lifeElements-=type.getHP(WarriorType.type.DRAGON);
 					++spawnIndex;
 				}
 				break;
 			case 2:
 				if(lifeElements>=type.getHP(WarriorType.type.NINJA)){
-					ret=new Ninja(ID,type.getHP(WarriorType.type.NINJA),type.geAttack(WarriorType.type.NINJA),Team.red);
+					ret=new Ninja(ID,type.getHP(WarriorType.type.NINJA),type.geAttack(WarriorType.type.NINJA),Team.blue);
 					lifeElements-=type.getHP(WarriorType.type.NINJA);
 					++spawnIndex;
 				}
 				break;
 			case 3:
 				if(lifeElements>=type.getHP(WarriorType.type.ICEMAN)){
-					ret=new Iceman(ID,type.getHP(WarriorType.type.ICEMAN),type.geAttack(WarriorType.type.ICEMAN),Team.red);
+					ret=new Iceman(ID,type.getHP(WarriorType.type.ICEMAN),type.geAttack(WarriorType.type.ICEMAN),Team.blue);
 					lifeElements-=type.getHP(WarriorType.type.ICEMAN);
 					++spawnIndex;
 				}
 				break;
 			case 4:
 				if(lifeElements>=type.getHP(WarriorType.type.WOLF)){
-					ret=new Wolf(ID,type.getHP(WarriorType.type.WOLF),type.geAttack(WarriorType.type.WOLF),Team.red);
+					ret=new Wolf(ID,type.getHP(WarriorType.type.WOLF),type.geAttack(WarriorType.type.WOLF),Team.blue);
 					lifeElements-=type.getHP(WarriorType.type.WOLF);
 					++spawnIndex;
 				}

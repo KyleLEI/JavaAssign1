@@ -80,16 +80,27 @@ public class World {
 		}
 	}
 
+	/**
+	 * The method follows the routine of
+	 * <ol>
+	 * <li>Iterate over HQ and cities from west to east</li>
+	 * <li>Iterate over warriors within the location</li>
+	 * <li>check if the warrior has been moved in this round</li>
+	 * <li>if not, remove it from the current location and move to the next</li>
+	 * <li>register that this warrior has been moved this round</li>
+	 * </ol>
+	 */
 	private void move() {
-
-		LinkedList<Warrior> moved=new LinkedList<Warrior>();
+		LinkedList<Warrior> moved = new LinkedList<Warrior>();
 		Iterator<Warrior> it;
 		Warrior w;
 
 		it = hq[0].warriorInHQ.iterator();// handle moves from red HQ
 		while (it.hasNext()) {
 			w = it.next();
-			if(moved.contains(w)) continue;
+			if (moved.contains(w))
+				continue;
+			w.beforeMove();
 			++w.location;
 			it.remove();
 			cities[0].warriorInCity.add(w);
@@ -101,14 +112,17 @@ public class World {
 			it = cities[0].warriorInCity.iterator();// handle city 1;
 			while (it.hasNext()) {
 				w = it.next();
-				if(moved.contains(w)) continue;
+				if (moved.contains(w))
+					continue;
 				if (w.getTeam() == Team.red) {
+					w.beforeMove();
 					++w.location;
 					it.remove();
 					cities[1].warriorInCity.add(w);
 					announceCityMove(w, w.location);
 					moved.add(w);
 				} else {
+					w.beforeMove();
 					redHQOccupierCount++;
 					it.remove();
 					blueWarriors.remove(w);
@@ -118,18 +132,21 @@ public class World {
 			}
 
 			for (int i = 1; i < cities.length - 1; ++i) {// handle regular city
-				// moves first
+				// moves
 				it = cities[i].warriorInCity.iterator();
 				while (it.hasNext()) {
 					w = it.next();
-					if(moved.contains(w)) continue;
+					if (moved.contains(w))
+						continue;
 					if (w.getTeam() == Team.red) {
+						w.beforeMove();
 						++w.location;
 						it.remove();
 						cities[i + 1].warriorInCity.add(w);
 						announceCityMove(w, w.location);
 						moved.add(w);
 					} else {
+						w.beforeMove();
 						--w.location;
 						it.remove();
 						cities[i - 1].warriorInCity.add(w);
@@ -144,14 +161,17 @@ public class World {
 																	// city
 			while (it.hasNext()) {
 				w = it.next();
-				if(moved.contains(w)) continue;
+				if (moved.contains(w))
+					continue;
 				if (w.getTeam() == Team.blue) {
+					w.beforeMove();
 					--w.location;
 					it.remove();
 					cities[cities.length - 2].warriorInCity.add(w);
 					announceCityMove(w, w.location);
 					moved.add(w);
 				} else {
+					w.beforeMove();
 					blueHQOccupierCount++;
 					it.remove();
 					redWarriors.remove(w);
@@ -163,13 +183,16 @@ public class World {
 			it = cities[0].warriorInCity.iterator();
 			while (it.hasNext()) {
 				w = it.next();
-				if(moved.contains(w)) continue;
+				if (moved.contains(w))
+					continue;
 				if (w.getTeam() == Team.red) {
+					w.beforeMove();
 					blueHQOccupierCount++;
 					it.remove();
 					announceHQMove(w, Team.blue);
 					moved.add(w);
 				} else {
+					w.beforeMove();
 					redHQOccupierCount++;
 					it.remove();
 					blueWarriors.remove(w);
@@ -178,13 +201,14 @@ public class World {
 				}
 			}
 		}
-		
+
 		it = hq[1].warriorInHQ.iterator();// handle moves from blue HQ
 		while (it.hasNext()) {
 			w = it.next();
+			w.beforeMove();
 			--w.location;
 			it.remove();
-			cities[cities.length-1].warriorInCity.add(w);
+			cities[cities.length - 1].warriorInCity.add(w);
 			announceCityMove(w, w.location);
 		}
 
@@ -197,13 +221,26 @@ public class World {
 	private void announceHQMove(Warrior w, Team HQ) {
 		System.out.println(clock + " " + w + " reached " + HQ + "headquarter " + w.getDetails());
 	}
-	
-	private void checkVictory(){
-		
+
+	private void announceHQTaken(Team team) {
+		System.out.println(clock + " " + team + " headquarter was taken");
+	}
+
+	private boolean checkVictory() {
+		boolean ret = false;
+		if (redHQOccupierCount == 2) {
+			ret = true;
+			announceHQTaken(Team.red);
+		}
+		if (blueHQOccupierCount == 2) {
+			ret = true;
+			announceHQTaken(Team.blue);
+		}
+		return ret;
 	}
 
 	/**
-	 * The real main function of the program.
+	 * The main function of the game logic.
 	 */
 	public void run() {
 		while (clock.getTime() < T) {
@@ -213,6 +250,9 @@ public class World {
 				break;
 			case 10:
 				move();
+				if (checkVictory())
+					return;// end game
+				break;
 			case 20:
 			case 30:
 			case 40:
