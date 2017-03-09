@@ -1,5 +1,6 @@
 package world;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import warriors.Warrior;
@@ -17,12 +18,12 @@ import warriors.Warrior;
  * @version 1.0.0
  */
 public class City {
-	public LinkedList<Warrior> warriorInCity;
+	public ArrayList<Warrior> warriorInCity;
 	private Team occupier=Team.none;
 	private int lifeElements=0;
 	
 	City(){
-		warriorInCity=new LinkedList<Warrior>();
+		warriorInCity=new ArrayList<Warrior>();
 	}
 	
 	public void produceLifeElements(){lifeElements+=10;}

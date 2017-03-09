@@ -1,5 +1,6 @@
 package world;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -27,18 +28,19 @@ public class World {
 	private int T;
 	private int[] HP;
 	private int[] attack;
-	private LinkedList<Warrior> redWarriors;
-	private LinkedList<Warrior> blueWarriors;
+	private ArrayList<Warrior> redWarriors;
+	private ArrayList<Warrior> blueWarriors;
 	private City[] cities;
 	private Headquarter[] hq;
 	private WarriorType type;
 	private int redHQOccupierCount = 0;
 	private int blueHQOccupierCount = 0;
+	private boolean end = false;
 
 	World(int inLifeElement, int numberOfCities, int endTime) {
 		clock = new Clock();
-		redWarriors = new LinkedList<Warrior>();
-		blueWarriors = new LinkedList<Warrior>();
+		redWarriors = new ArrayList<Warrior>();
+		blueWarriors = new ArrayList<Warrior>();
 		cities = new City[numberOfCities];
 		for (int i = 0; i < numberOfCities; ++i)
 			cities[i] = new City();
@@ -110,7 +112,7 @@ public class World {
 
 		if (cities.length != 1) {
 			it = cities[0].warriorInCity.iterator();// handle city 1;
-			while (it.hasNext()) {
+			while (it.hasNext() && !end) {
 				w = it.next();
 				if (moved.contains(w))
 					continue;
@@ -130,11 +132,12 @@ public class World {
 					moved.add(w);
 				}
 			}
+			// if(!end)checkVictory();
 
 			for (int i = 1; i < cities.length - 1; ++i) {// handle regular city
 				// moves
 				it = cities[i].warriorInCity.iterator();
-				while (it.hasNext()) {
+				while (it.hasNext() && !end) {
 					w = it.next();
 					if (moved.contains(w))
 						continue;
@@ -159,7 +162,7 @@ public class World {
 			it = cities[cities.length - 1].warriorInCity.iterator();// handle
 																	// the last
 																	// city
-			while (it.hasNext()) {
+			while (it.hasNext() && !end) {
 				w = it.next();
 				if (moved.contains(w))
 					continue;
@@ -176,12 +179,14 @@ public class World {
 					it.remove();
 					redWarriors.remove(w);
 					announceHQMove(w, Team.blue);
+
 					moved.add(w);
 				}
 			}
+			checkVictory();
 		} else {// if only one city
 			it = cities[0].warriorInCity.iterator();
-			while (it.hasNext()) {
+			while (it.hasNext() && !end) {
 				w = it.next();
 				if (moved.contains(w))
 					continue;
@@ -190,6 +195,7 @@ public class World {
 					blueHQOccupierCount++;
 					it.remove();
 					announceHQMove(w, Team.blue);
+					// checkVictory();
 					moved.add(w);
 				} else {
 					w.beforeMove();
@@ -197,13 +203,15 @@ public class World {
 					it.remove();
 					blueWarriors.remove(w);
 					announceHQMove(w, Team.red);
+
 					moved.add(w);
 				}
 			}
+			checkVictory();
 		}
 
 		it = hq[1].warriorInHQ.iterator();// handle moves from blue HQ
-		while (it.hasNext()) {
+		while (it.hasNext() && !end) {
 			w = it.next();
 			w.beforeMove();
 			--w.location;
@@ -219,24 +227,44 @@ public class World {
 	}
 
 	private void announceHQMove(Warrior w, Team HQ) {
-		System.out.println(clock + " " + w + " reached " + HQ + "headquarter " + w.getDetails());
+		System.out.println(clock + " " + w + " reached " + HQ + " headquarter " + w.getDetails());
 	}
 
 	private void announceHQTaken(Team team) {
 		System.out.println(clock + " " + team + " headquarter was taken");
 	}
 
-	private boolean checkVictory() {
-		boolean ret = false;
+	private void checkVictory() {
 		if (redHQOccupierCount == 2) {
-			ret = true;
+			end = true;
 			announceHQTaken(Team.red);
 		}
 		if (blueHQOccupierCount == 2) {
-			ret = true;
+			end = true;
 			announceHQTaken(Team.blue);
 		}
-		return ret;
+	}
+
+	private void produceLE() {
+		for (int i = 0; i < cities.length; ++i) {
+			cities[i].produceLifeElements();
+		}
+	}
+
+	private void takeLE() {
+		for (int i = 0; i < cities.length; ++i) {
+			if (cities[i].warriorInCity.size() == 1) {
+				if (cities[i].warriorInCity.get(0).getTeam() == Team.red)
+					hq[0].addLE(cities[i].takeLifeElements());
+				else
+					hq[1].addLE(cities[i].takeLifeElements());
+			}
+		}
+	}
+
+	private void report() {
+		System.out.println(clock + " " + hq[0]);
+		System.out.println(clock + " " + hq[1]);
 	}
 
 	/**
@@ -250,13 +278,19 @@ public class World {
 				break;
 			case 10:
 				move();
-				if (checkVictory())
+				if (end)
 					return;// end game
 				break;
 			case 20:
+				produceLE();
+				break;
 			case 30:
+				takeLE();
+				break;
 			case 40:
+				break;
 			case 50:
+				report();
 			}
 			clock.tick();
 		}

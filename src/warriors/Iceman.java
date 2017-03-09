@@ -29,7 +29,8 @@ public class Iceman extends Warrior {
 	 */
 	@Override
 	public void beforeMove(){
-		if(steps%2==0&&steps!=0){
+		++steps;
+		if(steps%2==0&&steps!=0){//TODO: test whether 2 or 3
 			HP-=9;
 			HP=Math.max(HP, 1);
 			attackV+=20;
