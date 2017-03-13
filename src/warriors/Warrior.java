@@ -28,6 +28,14 @@ public class Warrior {
 	 */
 	public boolean isDead(){return HP<=0;}
 	
+	public int getHP() {
+		return HP;
+	}
+
+	public int getAttackV() {
+		return attackV;
+	}
+
 	/**
 	 * Receives life element reward from the HQ
 	 * 
@@ -91,10 +99,11 @@ public class Warrior {
 	 * @throws Death if the enemy is killed
 	 */
 	public void attack(Warrior enemy) throws Death{
+		int HPBefore=enemy.HP;
 		enemy.HP-=this.attackV;
 		if(enemy.isDead()) {
 			if(enemy instanceof Lion){
-				this.HP+=enemy.HP;//transfer the HP to the warrior that killed it
+				this.HP+=HPBefore;//transfer the HP to the warrior that killed it
 			}
 			throw new Death(this,enemy);
 		}
@@ -112,11 +121,12 @@ public class Warrior {
 	 * @throws Cheer if a {@link Dragon} is taking the attack and survived, then cheers
 	 */
 	public void counter(Warrior enemy) throws Death,Cheer{
+		int HPBefore=enemy.HP;
 		enemy.HP-=this.attackV/2;
 		//must throw Death first, or death will never be caught because of the Cheer thrown
 		if(enemy.isDead()) {
 			if(enemy instanceof Lion){
-				this.HP+=enemy.HP;//transfer the HP to the warrior that killed it
+				this.HP+=HPBefore;//transfer the HP to the warrior that killed it
 			}
 			throw new Death(this,enemy);
 		}

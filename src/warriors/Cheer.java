@@ -21,7 +21,7 @@ public class Cheer extends Throwable {
 
 	@Override
 	public String toString() {
-		return dragon.toString() + " roared";
+		return dragon.toString() + " yelled";
 	}
 	
 }

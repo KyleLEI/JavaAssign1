@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import warriors.Cheer;
+import warriors.Death;
 import warriors.Warrior;
 
 /**
@@ -92,8 +94,8 @@ public class World {
 	 * <li>register that this warrior has been moved this round</li>
 	 * </ol>
 	 */
-	private void move() {
-		LinkedList<Warrior> moved = new LinkedList<Warrior>();
+	private void move() {//FIXME:problematic sequencing, fix it
+		ArrayList<Warrior> moved = new ArrayList<Warrior>();
 		Iterator<Warrior> it;
 		Warrior w;
 
@@ -105,7 +107,7 @@ public class World {
 			w.beforeMove();
 			++w.location;
 			it.remove();
-			cities[0].warriorInCity.add(w);
+			cities[0].warriorInCity.addFirst(w);
 			announceCityMove(w, w.location);
 			moved.add(w);
 		}
@@ -120,7 +122,7 @@ public class World {
 					w.beforeMove();
 					++w.location;
 					it.remove();
-					cities[1].warriorInCity.add(w);
+					cities[1].warriorInCity.addFirst(w);
 					announceCityMove(w, w.location);
 					moved.add(w);
 				} else {
@@ -132,7 +134,7 @@ public class World {
 					moved.add(w);
 				}
 			}
-			// if(!end)checkVictory();
+			checkVictory();
 
 			for (int i = 1; i < cities.length - 1; ++i) {// handle regular city
 				// moves
@@ -145,14 +147,14 @@ public class World {
 						w.beforeMove();
 						++w.location;
 						it.remove();
-						cities[i + 1].warriorInCity.add(w);
+						cities[i + 1].warriorInCity.addFirst(w);
 						announceCityMove(w, w.location);
 						moved.add(w);
 					} else {
 						w.beforeMove();
 						--w.location;
 						it.remove();
-						cities[i - 1].warriorInCity.add(w);
+						cities[i - 1].warriorInCity.addLast(w);
 						announceCityMove(w, w.location);
 						moved.add(w);
 					}
@@ -170,7 +172,7 @@ public class World {
 					w.beforeMove();
 					--w.location;
 					it.remove();
-					cities[cities.length - 2].warriorInCity.add(w);
+					cities[cities.length - 2].warriorInCity.addLast(w);
 					announceCityMove(w, w.location);
 					moved.add(w);
 				} else {
@@ -183,7 +185,8 @@ public class World {
 					moved.add(w);
 				}
 			}
-			checkVictory();
+			if (!end)
+				checkVictory();
 		} else {// if only one city
 			it = cities[0].warriorInCity.iterator();
 			while (it.hasNext() && !end) {
@@ -216,7 +219,7 @@ public class World {
 			w.beforeMove();
 			--w.location;
 			it.remove();
-			cities[cities.length - 1].warriorInCity.add(w);
+			cities[cities.length - 1].warriorInCity.addLast(w);
 			announceCityMove(w, w.location);
 		}
 
@@ -254,12 +257,112 @@ public class World {
 	private void takeLE() {
 		for (int i = 0; i < cities.length; ++i) {
 			if (cities[i].warriorInCity.size() == 1) {
-				if (cities[i].warriorInCity.get(0).getTeam() == Team.red)
-					hq[0].addLE(cities[i].takeLifeElements());
-				else
-					hq[1].addLE(cities[i].takeLifeElements());
+				int LE = cities[i].takeLifeElements();
+				if (cities[i].warriorInCity.get(0).getTeam() == Team.red) {
+					hq[0].addLE(LE);
+					announceLE(cities[i].warriorInCity.get(0),LE);
+				} else {
+					hq[1].addLE(LE);
+					announceLE(cities[i].warriorInCity.get(0),LE);
+				}
 			}
 		}
+	}
+
+	private void announceLE(Warrior w, int LE) {
+		System.out.println(clock + " " + w + " earned " + LE + " elements for his headquarter");
+	}
+
+	private void combat() {
+		for (int i = 0; i < cities.length; ++i) {
+			if (cities[i].warriorInCity.size() == 2) {// if there are two
+														// warriors in a city
+				if (cities[i].flag == Team.none) {
+					if (i % 2 == 0)// "city index" odd, red attacks
+						attack(cities[i].warriorInCity.getFirst(), cities[i].warriorInCity.getLast(), i);
+					else
+						attack(cities[i].warriorInCity.getLast(), cities[i].warriorInCity.getFirst(), i);
+				}
+
+				else if (cities[i].flag == Team.red) {
+					attack(cities[i].warriorInCity.getFirst(), cities[i].warriorInCity.getLast(), i);
+				}
+
+				else {
+					attack(cities[i].warriorInCity.getLast(), cities[i].warriorInCity.getFirst(), i);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param wa
+	 *            the attacker
+	 * @param wb
+	 *            the victim
+	 * @param cityIndex
+	 *            city index
+	 */
+	private void attack(Warrior wa, Warrior wb, int cityIndex) {
+		try {
+			System.out.println(clock + " " + wa + " attacked " + wb + 
+					" in city " + (cityIndex + 1)+" with "+wa.getHP()
+					+" elements and force "+wa.getAttackV());
+			wa.attack(wb);
+			try {
+				System.out.println(clock + " " + wb + " fought back against " + wa + " in city " + (cityIndex + 1));
+				wb.counter(wa);
+			} catch (Cheer c) {
+				System.out.println(clock + " " + c + " in city " + (cityIndex + 1));
+			}
+		} catch (Death d) {
+			System.out.println(clock + " " + d + " in city " + (cityIndex + 1));// announce
+																				// death
+			rewardWarrior(d);
+			int LE=hqGetLE(d, cities[cityIndex]);
+			announceLE(d.getKiller(),LE);
+			cities[cityIndex].warriorInCity.remove(d.getVictim());
+			changeFlag(cityIndex, d);
+			if (redWarriors.remove(d.getVictim())) {
+			} else
+				blueWarriors.remove(d.getVictim());
+
+		}
+	}
+
+	private void rewardWarrior(Death d) {
+		if (d.getVictim().getTeam() == Team.red)
+			d.getKiller().addHP(hq[1].rewardLE());
+		else
+			d.getKiller().addHP(hq[0].rewardLE());
+	}
+
+	private int hqGetLE(Death d, City c) {
+		int LE=c.takeLifeElements();
+		if (d.getKiller().getTeam() == Team.red) {
+			hq[0].addLE(LE);
+		} else {
+			hq[1].addLE(LE);
+		}
+		return LE;
+	}
+
+	private void changeFlag(int cityI, Death d) {
+		Team newFlag = Team.none;
+		if (cities[cityI].lastKillerTeam == d.getKiller().getTeam()) {
+			newFlag = d.getKiller().getTeam();
+		} else
+			cities[cityI].lastKillerTeam = d.getKiller().getTeam();
+
+		if (newFlag != cities[cityI].flag) {
+			cities[cityI].flag = newFlag;
+			announceFlag(cityI, newFlag);
+		}
+
+	}
+
+	private void announceFlag(int cityI, Team flag) {
+		System.out.println(clock + " " + flag + " flag raised in city " + (cityI + 1));
 	}
 
 	private void report() {
@@ -271,7 +374,7 @@ public class World {
 	 * The main function of the game logic.
 	 */
 	public void run() {
-		while (clock.getTime() < T) {
+		while (clock.getTime() <= T) {
 			switch (clock.getMinute()) {
 			case 0:
 				spawn();
@@ -279,7 +382,7 @@ public class World {
 			case 10:
 				move();
 				if (end)
-					return;// end game
+					return;// end game (victory)
 				break;
 			case 20:
 				produceLE();
@@ -288,12 +391,14 @@ public class World {
 				takeLE();
 				break;
 			case 40:
+				combat();
 				break;
 			case 50:
 				report();
 			}
 			clock.tick();
 		}
+		return;// end game (time out)
 	}
 
 }

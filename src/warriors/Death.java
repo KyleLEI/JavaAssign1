@@ -31,7 +31,7 @@ public class Death extends Throwable {
 
 	@Override
 	public String toString() {
-		return killer.toString() + " killed " + victim.toString();
+		return victim.toString()+" was killed";
 	}
 	
 }

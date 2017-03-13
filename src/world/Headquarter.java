@@ -61,7 +61,7 @@ public class Headquarter {
 	 */
 	public Warrior spawnWarrior() {
 		Warrior ret = null;
-		int ID = spawnIndex / 5 + 1;
+		int ID = spawnIndex+1;
 		int TypeIndex = spawnIndex % 5;
 		if (team == Team.red) {
 			switch (TypeIndex) {
@@ -155,5 +155,13 @@ public class Headquarter {
 	
 	public void addLE(int inLE){
 		lifeElements+=inLE;
+	}
+	
+	public int rewardLE(){
+		if(lifeElements>=8){
+			lifeElements-=8;
+			return 8;
+		}
+		else return 0;
 	}
 }

@@ -14,9 +14,6 @@ package world;
 public class Clock {
 	private int hour=0;
 	private int minute=0;
-	public int getHour() {
-		return hour;
-	}
 	public int getMinute() {
 		return minute;
 	}
@@ -29,11 +26,14 @@ public class Clock {
 		return String.format("%03d", hour) + ":" + String.format("%02d", minute);
 	}
 	
+	/**
+	 * Increments the clock by 10 minutes.
+	 */
 	public void tick(){
 		minute+=10;
 		if(minute==60){
+			++hour;
 			minute=0;
-			hour++;
 		}
 	}
 }
