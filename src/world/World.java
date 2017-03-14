@@ -366,14 +366,14 @@ public class World {
 		return LE;
 	}
 
-	private void changeFlag(int cityI, Death d) {
-		Team newFlag = Team.none;
+	private void changeFlag(int cityI, Death d) {//FIXME: problematic
+		Team newFlag = cities[cityI].flag;
 		if (cities[cityI].lastKillerTeam == d.getKiller().getTeam()) {
 			newFlag = d.getKiller().getTeam();
 		} else
 			cities[cityI].lastKillerTeam = d.getKiller().getTeam();
 
-		if (newFlag != cities[cityI].flag) {
+		if (cities[cityI].flag!=newFlag) {
 			cities[cityI].flag = newFlag;
 			announceFlag(cityI, newFlag);
 		}
