@@ -16,7 +16,6 @@ import warriors.Warrior;
  * <li>the world clock, a {@link Clock} object</li>
  * <li>HP and attack of warrior types in the order of dragon, ninja, iceman,
  * lion and wolf, two {@code array} of 5 {@code int}</li>
- * <li>containers for warriors of the two teams, two {@link LinkedList}</li>
  * <li>container for cities, an {@code array}</li>
  * <li>headquarters of the two team, an {@code array} of
  * {@link Headquarter}</li>
@@ -90,6 +89,8 @@ public class World {
 	 * <li>if not, remove it from the current location and move to the next</li>
 	 * <li>register that this warrior has been moved this round</li>
 	 * </ol>
+	 * finally, it checks whether victory has been achieved and announce the
+	 * moves in an orderly manner.
 	 */
 	private void move() {
 		ArrayList<Warrior> moved = new ArrayList<Warrior>();
@@ -203,7 +204,6 @@ public class World {
 				}
 			}
 
-			
 		}
 		it = hq[1].warriorInHQ.iterator();// handle moves from blue HQ
 		while (it.hasNext()) {
@@ -249,7 +249,7 @@ public class World {
 	}
 
 	private void announceHQTaken(Team team) {
-		System.out.print(clock + " " + team + " headquarter was taken");
+		System.out.println(clock + " " + team + " headquarter was taken");
 	}
 
 	private void checkVictory() {
