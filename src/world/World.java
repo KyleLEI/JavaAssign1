@@ -1,6 +1,8 @@
 package world;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -38,6 +40,7 @@ public class World {
 	private int redHQOccupierCount = 0;
 	private int blueHQOccupierCount = 0;
 	private boolean end = false;
+	private LinkedList<MoveMessage> moves;
 
 	World(int inLifeElement, int numberOfCities, int endTime) {
 		clock = new Clock();
@@ -50,6 +53,7 @@ public class World {
 		hq[0] = new Headquarter(inLifeElement, Team.red);
 		hq[1] = new Headquarter(inLifeElement, Team.blue);
 		T = endTime;
+		moves = new LinkedList<MoveMessage>();
 	}
 
 	public void setHP(int dragon, int ninja, int iceman, int lion, int wolf) {
@@ -94,7 +98,7 @@ public class World {
 	 * <li>register that this warrior has been moved this round</li>
 	 * </ol>
 	 */
-	private void move() {//FIXME:problematic sequencing, fix it
+	private void move() {// FIXME:problematic sequencing, fix it
 		ArrayList<Warrior> moved = new ArrayList<Warrior>();
 		Iterator<Warrior> it;
 		Warrior w;
@@ -108,7 +112,8 @@ public class World {
 			++w.location;
 			it.remove();
 			cities[0].warriorInCity.addFirst(w);
-			announceCityMove(w, w.location);
+//			 announceCityMove(w, w.location);
+			moves.add(new MoveMessage(w));
 			moved.add(w);
 		}
 
@@ -123,18 +128,20 @@ public class World {
 					++w.location;
 					it.remove();
 					cities[1].warriorInCity.addFirst(w);
-					announceCityMove(w, w.location);
+//					 announceCityMove(w, w.location);
+					moves.add(new MoveMessage(w));
 					moved.add(w);
 				} else {
 					w.beforeMove();
 					redHQOccupierCount++;
 					it.remove();
 					blueWarriors.remove(w);
-					announceHQMove(w, Team.red);
+					 announceHQMove(w, Team.red);
+//					moves.add(new MoveMessage(w));
 					moved.add(w);
 				}
 			}
-			checkVictory();
+			// checkVictory();
 
 			for (int i = 1; i < cities.length - 1; ++i) {// handle regular city
 				// moves
@@ -146,16 +153,18 @@ public class World {
 					if (w.getTeam() == Team.red) {
 						w.beforeMove();
 						++w.location;
+						moves.add(new MoveMessage(w));
+//						announceCityMove(w, w.location);
 						it.remove();
 						cities[i + 1].warriorInCity.addFirst(w);
-						announceCityMove(w, w.location);
 						moved.add(w);
 					} else {
 						w.beforeMove();
 						--w.location;
+						moves.add(new MoveMessage(w));
 						it.remove();
 						cities[i - 1].warriorInCity.addLast(w);
-						announceCityMove(w, w.location);
+//						 announceCityMove(w, w.location);
 						moved.add(w);
 					}
 				}
@@ -171,22 +180,23 @@ public class World {
 				if (w.getTeam() == Team.blue) {
 					w.beforeMove();
 					--w.location;
+					moves.add(new MoveMessage(w));
 					it.remove();
 					cities[cities.length - 2].warriorInCity.addLast(w);
-					announceCityMove(w, w.location);
+//					 announceCityMove(w, w.location);
 					moved.add(w);
 				} else {
 					w.beforeMove();
 					blueHQOccupierCount++;
+//					moves.add(new MoveMessage(w));
 					it.remove();
 					redWarriors.remove(w);
-					announceHQMove(w, Team.blue);
-
+					 announceHQMove(w, Team.blue);
 					moved.add(w);
 				}
 			}
-			if (!end)
-				checkVictory();
+			// if (!end)
+//			checkVictory();
 		} else {// if only one city
 			it = cities[0].warriorInCity.iterator();
 			while (it.hasNext() && !end) {
@@ -196,6 +206,7 @@ public class World {
 				if (w.getTeam() == Team.red) {
 					w.beforeMove();
 					blueHQOccupierCount++;
+//					moves.add(new MoveMessage(w));
 					it.remove();
 					announceHQMove(w, Team.blue);
 					// checkVictory();
@@ -203,32 +214,66 @@ public class World {
 				} else {
 					w.beforeMove();
 					redHQOccupierCount++;
+//					moves.add(new MoveMessage(w));
 					it.remove();
 					blueWarriors.remove(w);
 					announceHQMove(w, Team.red);
-
 					moved.add(w);
 				}
 			}
-			checkVictory();
-		}
 
+			
+		}
 		it = hq[1].warriorInHQ.iterator();// handle moves from blue HQ
 		while (it.hasNext() && !end) {
 			w = it.next();
 			w.beforeMove();
 			--w.location;
+			moves.add(new MoveMessage(w));
 			it.remove();
 			cities[cities.length - 1].warriorInCity.addLast(w);
-			announceCityMove(w, w.location);
+//			announceCityMove(w, w.location);
+		}
+		checkVictory();
+
+	}
+
+	class MoveMessage implements Comparable<MoveMessage> {
+		public Warrior w;
+
+		MoveMessage(Warrior w) {
+			this.w = w;
 		}
 
+		@Override
+		public int compareTo(MoveMessage other) {
+			if (this.w.location != other.w.location)
+				return this.w.location - other.w.location;
+			else if (w.getTeam() == Team.red)
+				return -1;// TODO: test if this works
+			else
+				return 1;
+		}
+
+		@Override
+		public String toString() {
+//			if (w.location != 0 && w.location != cities.length + 1) {
+				return clock + " " + w + " marched to city " + w.location + " " + w.getDetails();
+//			} else {
+//				if (w.getTeam() == Team.red)
+//					System.out.println(clock + " " + w + " reached blue headquarter " + w.getDetails());
+//				else
+//					System.out.println(clock + " " + w + " reached red headquarter " + w.getDetails());
+//			}
+//			return null;
+		}
 	}
 
-	private void announceCityMove(Warrior w, int cityIndex) {
-		System.out.println(clock + " " + w + " marched to city " + cityIndex + " " + w.getDetails());
-	}
-
+//	private void announceCityMove(Warrior w, int cityIndex) {
+//	 System.out.println(clock + " " + w + " marched to city " + cityIndex + 
+//			 " " + w.getDetails());
+//	 }
+//
 	private void announceHQMove(Warrior w, Team HQ) {
 		System.out.println(clock + " " + w + " reached " + HQ + " headquarter " + w.getDetails());
 	}
@@ -238,6 +283,15 @@ public class World {
 	}
 
 	private void checkVictory() {
+		moves.sort(new Comparator<MoveMessage>() {
+			@Override
+			public int compare(MoveMessage o1, MoveMessage o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		moves.forEach(System.out::println);
+		moves.clear();
+
 		if (redHQOccupierCount == 2) {
 			end = true;
 			announceHQTaken(Team.red);
@@ -260,10 +314,10 @@ public class World {
 				int LE = cities[i].takeLifeElements();
 				if (cities[i].warriorInCity.get(0).getTeam() == Team.red) {
 					hq[0].addLE(LE);
-					announceLE(cities[i].warriorInCity.get(0),LE);
+					announceLE(cities[i].warriorInCity.get(0), LE);
 				} else {
 					hq[1].addLE(LE);
-					announceLE(cities[i].warriorInCity.get(0),LE);
+					announceLE(cities[i].warriorInCity.get(0), LE);
 				}
 			}
 		}
@@ -305,9 +359,8 @@ public class World {
 	 */
 	private void attack(Warrior wa, Warrior wb, int cityIndex) {
 		try {
-			System.out.println(clock + " " + wa + " attacked " + wb + 
-					" in city " + (cityIndex + 1)+" with "+wa.getHP()
-					+" elements and force "+wa.getAttackV());
+			System.out.println(clock + " " + wa + " attacked " + wb + " in city " + (cityIndex + 1) + " with "
+					+ wa.getHP() + " elements and force " + wa.getAttackV());
 			wa.attack(wb);
 			try {
 				System.out.println(clock + " " + wb + " fought back against " + wa + " in city " + (cityIndex + 1));
@@ -319,8 +372,8 @@ public class World {
 			System.out.println(clock + " " + d + " in city " + (cityIndex + 1));// announce
 																				// death
 			rewardWarrior(d);
-			int LE=hqGetLE(d, cities[cityIndex]);
-			announceLE(d.getKiller(),LE);
+			int LE = hqGetLE(d, cities[cityIndex]);
+			announceLE(d.getKiller(), LE);
 			cities[cityIndex].warriorInCity.remove(d.getVictim());
 			changeFlag(cityIndex, d);
 			if (redWarriors.remove(d.getVictim())) {
@@ -338,7 +391,7 @@ public class World {
 	}
 
 	private int hqGetLE(Death d, City c) {
-		int LE=c.takeLifeElements();
+		int LE = c.takeLifeElements();
 		if (d.getKiller().getTeam() == Team.red) {
 			hq[0].addLE(LE);
 		} else {

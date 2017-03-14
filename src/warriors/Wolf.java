@@ -35,6 +35,7 @@ public class Wolf extends Warrior{
 	 */
 	@Override
 	public void attack(Warrior enemy) throws Death{
+		int HPBefore=enemy.HP;
 		enemy.HP-=this.attackV;
 		if(enemy.isDead()) {
 			++enemiesKilled;
@@ -43,7 +44,7 @@ public class Wolf extends Warrior{
 				this.attackV=2*this.attackV;
 			}
 			if(enemy instanceof Lion){
-				this.HP+=enemy.HP;//transfer the HP to the warrior that killed it
+				this.HP+=HPBefore;//transfer the HP to the warrior that killed it
 			}
 			throw new Death(this,enemy);
 		}
