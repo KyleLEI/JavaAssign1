@@ -353,7 +353,7 @@ public class World {
 			System.out.println(clock + " " + d + " in city " + (cityIndex + 1));// announce
 																				// death
 			if (d.getKiller().getTeam() == Team.red)
-				redAwardee.addLast(d.getKiller());
+				redAwardee.addFirst(d.getKiller());
 			else
 				blueAwardee.add(d.getKiller());
 			cities[cityIndex].warriorInCity.remove(d.getVictim());
