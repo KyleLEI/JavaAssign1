@@ -37,6 +37,8 @@ public class World {
 	private int blueHQOccupierCount = 0;
 	private boolean end = false;
 	private LinkedList<MoveMessage> moves;
+	private LinkedList<Warrior> redAwardee;
+	private LinkedList<Warrior> blueAwardee;
 
 	World(int inLifeElement, int numberOfCities, int endTime) {
 		clock = new Clock();
@@ -48,6 +50,8 @@ public class World {
 		hq[1] = new Headquarter(inLifeElement, Team.blue);
 		T = endTime;
 		moves = new LinkedList<MoveMessage>();
+		redAwardee = new LinkedList<Warrior>();
+		blueAwardee = new LinkedList<Warrior>();
 	}
 
 	public void setHP(int dragon, int ninja, int iceman, int lion, int wolf) {
@@ -294,10 +298,13 @@ public class World {
 	}
 
 	private void announceLE(Warrior w, int LE) {
-		System.out.println(clock + " " + w + " earned " + LE + " elements for his headquarter");
+		if (LE != 0)
+			System.out.println(clock + " " + w + " earned " + LE + " elements for his headquarter");
 	}
 
 	private void combat() {
+		redAwardee.clear();
+		blueAwardee.clear();
 		for (int i = 0; i < cities.length; ++i) {
 			if (cities[i].warriorInCity.size() == 2) {// if there are two
 														// warriors in a city
@@ -317,9 +324,13 @@ public class World {
 				}
 			}
 		}
+		rewardWarrior();
+		takeLE();
 	}
 
 	/**
+	 * A single attack.
+	 * 
 	 * @param wa
 	 *            the attacker
 	 * @param wb
@@ -341,39 +352,46 @@ public class World {
 		} catch (Death d) {
 			System.out.println(clock + " " + d + " in city " + (cityIndex + 1));// announce
 																				// death
-			rewardWarrior(d);
-			int LE = hqGetLE(d, cities[cityIndex]);
-			announceLE(d.getKiller(), LE);
+			if (d.getKiller().getTeam() == Team.red)
+				redAwardee.addLast(d.getKiller());
+			else
+				blueAwardee.add(d.getKiller());
 			cities[cityIndex].warriorInCity.remove(d.getVictim());
-			changeFlag(cityIndex, d);
+			changeFlag(cityIndex, d.getKiller().getTeam());
+			return;
 		}
+		changeFlag(cityIndex, Team.none);
 	}
 
-	private void rewardWarrior(Death d) {
-		if (d.getVictim().getTeam() == Team.red)
-			d.getKiller().addHP(hq[1].rewardLE());
-		else
-			d.getKiller().addHP(hq[0].rewardLE());
-	}
+	private void rewardWarrior() {
+		Iterator<Warrior> it;
+		Warrior w;
 
-	private int hqGetLE(Death d, City c) {
-		int LE = c.takeLifeElements();
-		if (d.getKiller().getTeam() == Team.red) {
-			hq[0].addLE(LE);
-		} else {
-			hq[1].addLE(LE);
+		// reward red warriors
+		it = redAwardee.iterator();
+		while (it.hasNext()) {
+			w = it.next();
+			w.addHP(hq[0].rewardLE());
 		}
-		return LE;
+		redAwardee.clear();
+
+		// reward blue warriors
+		it = blueAwardee.iterator();
+		while (it.hasNext()) {
+			w = it.next();
+			w.addHP(hq[1].rewardLE());
+		}
+		blueAwardee.clear();
 	}
 
-	private void changeFlag(int cityI, Death d) {//FIXME: problematic
-		Team newFlag = cities[cityI].flag;
-		if (cities[cityI].lastKillerTeam == d.getKiller().getTeam()) {
-			newFlag = d.getKiller().getTeam();
+	private void changeFlag(int cityI, Team flag) {
+		Team newFlag = Team.none;
+		if (cities[cityI].lastKillerTeam == flag) {
+			newFlag = flag;// consecutively twice
 		} else
-			cities[cityI].lastKillerTeam = d.getKiller().getTeam();
+			cities[cityI].lastKillerTeam = flag;// record the first kill
 
-		if (cities[cityI].flag!=newFlag) {
+		if (cities[cityI].flag != newFlag) {
 			cities[cityI].flag = newFlag;
 			announceFlag(cityI, newFlag);
 		}
@@ -381,7 +399,8 @@ public class World {
 	}
 
 	private void announceFlag(int cityI, Team flag) {
-		System.out.println(clock + " " + flag + " flag raised in city " + (cityI + 1));
+		if (flag != Team.none)
+			System.out.println(clock + " " + flag + " flag raised in city " + (cityI + 1));
 	}
 
 	private void report() {
