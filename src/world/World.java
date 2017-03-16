@@ -282,16 +282,18 @@ public class World {
 		}
 	}
 
-	private void takeLE() {
+	private void takeLE(boolean shouldAnnounce) {
 		for (int i = 0; i < cities.length; ++i) {
 			if (cities[i].warriorInCity.size() == 1) {
 				int LE = cities[i].takeLifeElements();
 				if (cities[i].warriorInCity.get(0).getTeam() == Team.red) {
 					hq[0].addLE(LE);
-					announceLE(cities[i].warriorInCity.get(0), LE);
+					if (shouldAnnounce)
+						announceLE(cities[i].warriorInCity.get(0), LE);
 				} else {
 					hq[1].addLE(LE);
-					announceLE(cities[i].warriorInCity.get(0), LE);
+					if (shouldAnnounce)
+						announceLE(cities[i].warriorInCity.get(0), LE);
 				}
 			}
 		}
@@ -325,7 +327,7 @@ public class World {
 			}
 		}
 		rewardWarrior();
-		takeLE();
+		takeLE(false);// take LE without announcing
 	}
 
 	/**
@@ -357,6 +359,11 @@ public class World {
 			else
 				blueAwardee.add(d.getKiller());
 			cities[cityIndex].warriorInCity.remove(d.getVictim());
+			announceLE(d.getKiller(), cities[cityIndex].getLE());// fake
+																	// announcement,
+																	// not
+																	// really
+																	// taken
 			changeFlag(cityIndex, d.getKiller().getTeam());
 			return;
 		}
@@ -391,7 +398,7 @@ public class World {
 		} else
 			cities[cityI].lastKillerTeam = flag;// record the first kill
 
-		if (cities[cityI].flag != newFlag) {
+		if (cities[cityI].flag != newFlag && newFlag != Team.none) {
 			cities[cityI].flag = newFlag;
 			announceFlag(cityI, newFlag);
 		}
@@ -399,8 +406,7 @@ public class World {
 	}
 
 	private void announceFlag(int cityI, Team flag) {
-		if (flag != Team.none)
-			System.out.println(clock + " " + flag + " flag raised in city " + (cityI + 1));
+		System.out.println(clock + " " + flag + " flag raised in city " + (cityI + 1));
 	}
 
 	private void report() {
@@ -426,7 +432,7 @@ public class World {
 				produceLE();
 				break;
 			case 30:
-				takeLE();
+				takeLE(true);
 				break;
 			case 40:
 				combat();

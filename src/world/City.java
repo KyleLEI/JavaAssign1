@@ -37,4 +37,7 @@ public class City {
 		lifeElements=0;
 		return ret;
 	}
+	public int getLE(){
+		return lifeElements;
+	}
 }
