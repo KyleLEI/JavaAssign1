@@ -35,6 +35,6 @@ public class Ninja extends Warrior {
 	 */
 	@Override
 	public void counter(Warrior enemy) throws Death,Cheer{
-//		if(enemy instanceof Dragon&&!enemy.isDead()){throw new Cheer((Dragon)enemy);}
+		if(enemy instanceof Dragon){throw new Cheer((Dragon)enemy);}
 	}
 }

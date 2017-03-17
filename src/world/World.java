@@ -5,9 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import warriors.Cheer;
-import warriors.Death;
-import warriors.Warrior;
+import warriors.*;
 
 /**
  * The world class handles the core game logic, including moving warriors and
@@ -257,7 +255,7 @@ public class World {
 	}
 
 	private void checkVictory() {
-		moves.sort(new Comparator<MoveMessage>() {
+		moves.sort(new Comparator<MoveMessage>() {// sort move messages
 			@Override
 			public int compare(MoveMessage o1, MoveMessage o2) {
 				return o1.compareTo(o2);
@@ -346,14 +344,19 @@ public class World {
 					+ wa.getHP() + " elements and force " + wa.getAttackV());
 			wa.attack(wb);
 			try {
-				System.out.println(clock + " " + wb + " fought back against " + wa + " in city " + (cityIndex + 1));
+				if (!(wb instanceof Ninja))
+					System.out.println(clock + " " + wb + " fought back against " + wa + " in city " + (cityIndex + 1));
 				wb.counter(wa);
-			} catch (Cheer c) {
+			} catch (Cheer c) {// cheer after not being killed by enemy counter
 				System.out.println(clock + " " + c + " in city " + (cityIndex + 1));
 			}
 		} catch (Death d) {
 			System.out.println(clock + " " + d + " in city " + (cityIndex + 1));// announce
 																				// death
+			if (d.getKiller() instanceof Dragon) // cheer after not even
+													// suffering counter or
+													// killed enemy
+				System.out.println(clock + " " + new Cheer((Dragon) d.getKiller()) + " in city " + (cityIndex + 1));
 			if (d.getKiller().getTeam() == Team.red)
 				redAwardee.addFirst(d.getKiller());
 			else

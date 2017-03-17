@@ -114,7 +114,7 @@ public class Warrior {
 	 * if the target is not killed, it will fight back instinctively. 
 	 * The attack value of the fight-back is the half of the attack value 
 	 * of the warriors conducting it.
-	 * Should be overridden by {@link Ninja} and {link Wolf}. </li>
+	 * Should be overridden by {@link Ninja}. </li>
 	 *
 	 * @param enemy  the enemy warrior target
 	 * @throws Death if the enemy is killed

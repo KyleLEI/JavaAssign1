@@ -10,7 +10,7 @@ package warriors;
 @SuppressWarnings("serial")
 public class Cheer extends Throwable {
 	private Dragon dragon;
-	Cheer(Dragon inDragon){
+	public Cheer(Dragon inDragon){
 		super();
 		dragon=inDragon;
 	}
@@ -21,7 +21,7 @@ public class Cheer extends Throwable {
 
 	@Override
 	public String toString() {
-		return dragon.toString() + " yelled";
+		return dragon + " yelled";
 	}
 	
 }
